@@ -1,25 +1,25 @@
 package model
 
-type Game struct {
+type GameModel struct {
 	Id      string
 	Label   string
-	Players []Player
-	Cards   [3]Card
+	Players []PlayerModel
+	Cards   [3]CardModel
 }
 
-type Card struct {
+type CardModel struct {
 	Id    string
 	Label string
 }
 
-type Player struct {
+type PlayerModel struct {
 	Id    string
 	Label string
-	Cards []Card
-	Pawn  *Pawn
+	Cards []CardModel
+	Pawn  *PawnModel
 }
 
-type Pawn struct {
+type PawnModel struct {
 	Color string
 	Label string
 }
