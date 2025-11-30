@@ -1,5 +1,18 @@
 package model
 
+type SimplGameInfoModel struct {
+	Id    string
+	Label string
+}
+
+type SimplGameCreateInfoModel struct {
+	Label string
+}
+
+type SimplGameUpdateInfoModel struct {
+	Label string
+}
+
 type GameModel struct {
 	Id      string
 	Label   string
@@ -22,4 +35,16 @@ type PlayerModel struct {
 type PawnModel struct {
 	Color string
 	Label string
+}
+
+type MessageModel struct {
+	Id      string
+	Time    string
+	Type    string
+	Message map[string]string
+}
+
+type CreateMessageModel struct {
+	Type    string
+	Message map[string]string
 }
