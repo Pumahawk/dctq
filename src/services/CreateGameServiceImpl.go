@@ -5,11 +5,11 @@ import (
 	"github.com/google/uuid"
 )
 
-func CreateGameServiceImpl(game model.SimplGameCreateInfoModel) model.GameModel {
+func CreateGameServiceImpl(game *model.SimplGameCreateInfoModel) (*model.GameModel, error) {
 	gameToCreate := model.GameModel{
 		Id:    uuid.New().String(),
 		Label: game.Label,
 	}
 	gamesInMemory.Games = append(gamesInMemory.Games, gameToCreate)
-	return gameToCreate
+	return &gameToCreate, nil
 }
