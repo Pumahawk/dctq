@@ -1,7 +1,7 @@
 package dto
 
 type GetAllGameResponseDto struct {
-	games []SimplGameInfoDto
+	Games []SimplGameInfoDto
 }
 
 type SimplGameInfoDto struct {
@@ -15,5 +15,14 @@ type GetGameByIdResponseDto struct {
 }
 
 type UpdateGameInfoRequestDto struct {
+	Label string
+}
+
+type CreateGameInfoResponseDto struct {
+	Id    string
+	Label string
+}
+
+type CreateGameInfoRequestDto struct {
 	Label string
 }

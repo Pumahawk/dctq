@@ -48,3 +48,7 @@ type CreateMessageModel struct {
 	Type    string
 	Message map[string]string
 }
+
+type ServerModel struct {
+	Games []GameModel
+}
