@@ -13,6 +13,7 @@ func main() {
 	http.Handle("GET "+controllers.GamesEndpoint, controllers.GamesController(services.GetAllGamesServiceImpl))
 	http.Handle("POST "+controllers.GamesEndpoint, controllers.CreateGameController(services.CreateGameServiceImpl))
 	http.Handle("GET "+controllers.GameByIdEndpoint, controllers.GetGameByIdController(services.GetGameByIdServiceImpl))
+	http.Handle("PUT "+controllers.GameByIdEndpoint, controllers.UpdateGameController(services.GetGameByIdServiceImpl, services.UpdateGameServiceImpl))
 	log.Println("Start Cluedo server")
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

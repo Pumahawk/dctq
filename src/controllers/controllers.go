@@ -66,10 +66,26 @@ func GetGameByIdController(getGameByIdService services.GetGameByIdService) http.
 	}
 }
 
-func UpdateGetGameByIdController(getGameByIdService services.GetGameByIdService) http.HandlerFunc {
+func UpdateGameController(getGameByIdService services.GetGameByIdService, updateGameService services.UpdateGameService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		log.Println("API GameByIdController - Not yet implemented")
-		w.WriteHeader(500)
+		id := r.PathValue("id")
+		game, err := getGameByIdService(id)
+		if err != nil {
+			log.Printf("UpdateGetGameByIdController - error on get game. %s", err)
+			return
+		}
+		if game != nil {
+			log.Printf("UpdateGetGameByIdController - not found. %s", err)
+			return
+		}
+		err = updateGameService(game)
+		if err != nil {
+			log.Printf("UpdateGameController - error on update. %s", err)
+			return
+		}
+		response := toUpdateGameResponse(game)
+		w.WriteHeader(200)
+		json.NewEncoder(w).Encode(response)
 	}
 }
 

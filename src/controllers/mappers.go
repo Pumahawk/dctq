@@ -12,7 +12,6 @@ func ToGetAllGameResponseDto(games []model.GameModel) *dto.GetAllGameResponseDto
 			Id:    g.Id,
 			Label: g.Label,
 		}
-		r := dto.GetAllGameResponseDto{}
 		r.Games = append(r.Games, gdto)
 	}
 	return &r
@@ -47,4 +46,15 @@ func toSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.Simpl
 	r := model.SimplGameCreateInfoModel{}
 	r.Label = game.Label
 	return &r
+}
+
+func toUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
+	if game == nil {
+		return nil
+	}
+	dto := dto.UpdateGameResponseDto{
+		Id:    game.Id,
+		Label: game.Label,
+	}
+	return &dto
 }

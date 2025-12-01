@@ -9,10 +9,6 @@ type SimplGameCreateInfoModel struct {
 	Label string
 }
 
-type SimplGameUpdateInfoModel struct {
-	Label string
-}
-
 type GameModel struct {
 	Id      string
 	Label   string

@@ -26,3 +26,8 @@ type CreateGameInfoResponseDto struct {
 type CreateGameInfoRequestDto struct {
 	Label string
 }
+
+type UpdateGameResponseDto struct {
+	Id    string
+	Label string
+}
