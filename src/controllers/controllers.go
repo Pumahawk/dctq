@@ -9,18 +9,20 @@ import (
 	"github.com/Pumahawk/cluedo/src/services"
 )
 
-var GamesEndpoint = "/games"
-var GameByIdEndpoint = "/games/{id}"
-var MessagesEndpoint = "/games/{id}/messages"
+const (
+	GamesEndpoint    = "/games"
+	GameByIdEndpoint = "/games/{id}"
+	MessagesEndpoint = "/games/{id}/messages"
+)
 
 type GamesController struct {
-	gameService services.GameServiceImpl
+	gameService services.GameService
 }
 
 type MessagesController struct {
 }
 
-func NewGamesController(gameService services.GameServiceImpl) *GamesController {
+func NewGamesController(gameService services.GameService) *GamesController {
 	return &GamesController{
 		gameService,
 	}
@@ -38,6 +40,7 @@ func (c *GamesController) GetAll() http.HandlerFunc {
 		err = json.NewEncoder(w).Encode(gamesDto)
 		if err != nil {
 			log.Printf("GamesController - error. %s", err)
+			return
 		}
 	}
 }

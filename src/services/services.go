@@ -10,6 +10,13 @@ import (
 
 var ErrGameNotFound = errors.New("Game not found")
 
+type GameService interface {
+	GameListener
+	GameCreator
+	GameGetter
+	GameUpdater
+}
+
 type GameListener interface {
 	GetAll() ([]model.GameModel, error)
 }
