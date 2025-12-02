@@ -4,12 +4,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Pumahawk/cluedo/internal/controllers"
-	"github.com/Pumahawk/cluedo/internal/services"
+	"github.com/Pumahawk/dctq/internal/controllers"
+	"github.com/Pumahawk/dctq/internal/services"
 )
 
 func main() {
-	log.Println("Starting cluedo server.")
+	log.Println("Starting dctq server.")
 	gameService := services.NewGameServiceImpl()
 	gameController := controllers.NewGamesController(gameService)
 	http.Handle("GET "+controllers.GamesEndpoint, gameController.GetAll())

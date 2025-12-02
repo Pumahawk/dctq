@@ -1,8 +1,8 @@
 package mappers
 
 import (
-	"github.com/Pumahawk/cluedo/internal/dto"
-	"github.com/Pumahawk/cluedo/internal/model"
+	"github.com/Pumahawk/dctq/internal/dto"
+	"github.com/Pumahawk/dctq/internal/model"
 )
 
 func ToGetAllGameResponseDto(games []model.GameModel) *dto.GetAllGameResponseDto {

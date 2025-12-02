@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Pumahawk/cluedo/internal/dto"
-	"github.com/Pumahawk/cluedo/internal/mappers"
-	"github.com/Pumahawk/cluedo/internal/services"
+	"github.com/Pumahawk/dctq/internal/dto"
+	"github.com/Pumahawk/dctq/internal/mappers"
+	"github.com/Pumahawk/dctq/internal/services"
 )
 
 const (

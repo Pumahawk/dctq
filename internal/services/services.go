@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/Pumahawk/cluedo/internal/model"
+	"github.com/Pumahawk/dctq/internal/model"
 )
 
 var ErrGameNotFound = errors.New("Game not found")
