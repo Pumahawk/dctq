@@ -1,8 +1,8 @@
-package controllers
+package mappers
 
 import (
-	"github.com/Pumahawk/cluedo/src/dto"
-	"github.com/Pumahawk/cluedo/src/model"
+	"github.com/Pumahawk/cluedo/internal/dto"
+	"github.com/Pumahawk/cluedo/internal/model"
 )
 
 func ToGetAllGameResponseDto(games []model.GameModel) *dto.GetAllGameResponseDto {
@@ -39,7 +39,7 @@ func ToGetGameByIdResponseDto(game *model.GameModel) *dto.GetGameByIdResponseDto
 	return &gdto
 }
 
-func toSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.SimplGameCreateInfoModel {
+func ToSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.SimplGameCreateInfoModel {
 	if game == nil {
 		return nil
 	}
@@ -48,7 +48,7 @@ func toSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.Simpl
 	return &r
 }
 
-func toUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
+func ToUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
 	if game == nil {
 		return nil
 	}
@@ -59,7 +59,7 @@ func toUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
 	return &dto
 }
 
-func toGameUpdateModel(game *dto.UpdateGameInfoRequestDto) *model.GameUpdateModel {
+func ToGameUpdateModel(game *dto.UpdateGameInfoRequestDto) *model.GameUpdateModel {
 	if game == nil {
 		return nil
 	}

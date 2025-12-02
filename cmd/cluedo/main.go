@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/Pumahawk/cluedo/src/controllers"
-	"github.com/Pumahawk/cluedo/src/services"
+	"github.com/Pumahawk/cluedo/internal/controllers"
+	"github.com/Pumahawk/cluedo/internal/services"
 )
 
 func main() {
