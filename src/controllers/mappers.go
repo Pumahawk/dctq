@@ -58,3 +58,13 @@ func toUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
 	}
 	return &dto
 }
+
+func toGameUpdateModel(game *dto.UpdateGameInfoRequestDto) *model.GameUpdateModel {
+	if game == nil {
+		return nil
+	}
+	m := model.GameUpdateModel{
+		Label: game.Label,
+	}
+	return &m
+}

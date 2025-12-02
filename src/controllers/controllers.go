@@ -13,9 +13,22 @@ var GamesEndpoint = "/games"
 var GameByIdEndpoint = "/games/{id}"
 var MessagesEndpoint = "/games/{id}/messages"
 
-func GamesController(getAllGamesService services.GetAllGamesService) http.HandlerFunc {
+type GamesController struct {
+	gameService services.GameServiceImpl
+}
+
+type MessagesController struct {
+}
+
+func NewGamesController(gameService services.GameServiceImpl) *GamesController {
+	return &GamesController{
+		gameService,
+	}
+}
+
+func (c *GamesController) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		games, err := getAllGamesService()
+		games, err := c.gameService.GetAll()
 		if err != nil {
 			log.Printf("GamesController - error. %s", err)
 			return
@@ -29,11 +42,11 @@ func GamesController(getAllGamesService services.GetAllGamesService) http.Handle
 	}
 }
 
-func CreateGameController(createGameService services.CreateGameService) http.HandlerFunc {
+func (c *GamesController) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var createGameInfoRequestDto dto.CreateGameInfoRequestDto
 		json.NewDecoder(r.Body).Decode(&createGameInfoRequestDto)
-		game, err := createGameService(toSimplGameCreateInfoModel(&createGameInfoRequestDto))
+		game, err := c.gameService.Create(*toSimplGameCreateInfoModel(&createGameInfoRequestDto))
 		if err != nil {
 			log.Printf("CreateGameController - error. %s", err)
 			return
@@ -48,10 +61,10 @@ func CreateGameController(createGameService services.CreateGameService) http.Han
 	}
 }
 
-func GetGameByIdController(getGameByIdService services.GetGameByIdService) http.HandlerFunc {
+func (c *GamesController) GetById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		gameModel, err := getGameByIdService(id)
+		gameModel, err := c.gameService.GetById(id)
 		if err != nil {
 			log.Printf("GetGameByIdController - error. %s", err)
 			return
@@ -66,19 +79,18 @@ func GetGameByIdController(getGameByIdService services.GetGameByIdService) http.
 	}
 }
 
-func UpdateGameController(getGameByIdService services.GetGameByIdService, updateGameService services.UpdateGameService) http.HandlerFunc {
+func (c *GamesController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		game, err := getGameByIdService(id)
+		var gdto dto.UpdateGameInfoRequestDto
+		json.NewDecoder(r.Body).Decode(&gdto)
+		gum := *toGameUpdateModel(&gdto)
+		err := c.gameService.UpdateById(id, gum)
 		if err != nil {
-			log.Printf("UpdateGetGameByIdController - error on get game. %s", err)
+			log.Printf("UpdateGameController - error on update. %s", err)
 			return
 		}
-		if game != nil {
-			log.Printf("UpdateGetGameByIdController - not found. %s", err)
-			return
-		}
-		err = updateGameService(game)
+		game, err := c.gameService.GetById(id)
 		if err != nil {
 			log.Printf("UpdateGameController - error on update. %s", err)
 			return
@@ -89,14 +101,14 @@ func UpdateGameController(getGameByIdService services.GetGameByIdService, update
 	}
 }
 
-func SandMessageController(sendMessageService services.SendMessageService) http.HandlerFunc {
+func (c *MessagesController) Send() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("API SandMessageController - Not yet implemented")
 		w.WriteHeader(500)
 	}
 }
 
-func FollowMessageController() http.HandlerFunc {
+func (c *MessagesController) Follow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("API FollowMessageController - Not yet implemented")
 		w.WriteHeader(500)
