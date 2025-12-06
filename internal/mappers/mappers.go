@@ -21,50 +21,56 @@ func ToCreateGameInfoResponseDto(game *model.GameModel) *dto.CreateGameInfoRespo
 	if game == nil {
 		return nil
 	}
-	gdto := dto.CreateGameInfoResponseDto{
+	return &dto.CreateGameInfoResponseDto{
 		Id:    game.Id,
 		Label: game.Label,
 	}
-	return &gdto
 }
 
 func ToGetGameByIdResponseDto(game *model.GameModel) *dto.GetGameByIdResponseDto {
 	if game == nil {
 		return nil
 	}
-	gdto := dto.GetGameByIdResponseDto{
+	return &dto.GetGameByIdResponseDto{
 		Id:    game.Id,
 		Label: game.Label,
 	}
-	return &gdto
 }
 
 func ToSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.SimplGameCreateInfoModel {
 	if game == nil {
 		return nil
 	}
-	r := model.SimplGameCreateInfoModel{}
-	r.Label = game.Label
-	return &r
+	return &model.SimplGameCreateInfoModel{
+		Label: game.Label,
+	}
 }
 
 func ToUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
 	if game == nil {
 		return nil
 	}
-	dto := dto.UpdateGameResponseDto{
+	return &dto.UpdateGameResponseDto{
 		Id:    game.Id,
 		Label: game.Label,
 	}
-	return &dto
 }
 
 func ToGameUpdateModel(game *dto.UpdateGameInfoRequestDto) *model.GameUpdateModel {
 	if game == nil {
 		return nil
 	}
-	m := model.GameUpdateModel{
+	return &model.GameUpdateModel{
 		Label: game.Label,
 	}
-	return &m
+}
+func ToCreateMessageModelFromDto(id string, dto *dto.SendMessageRequestDto) *model.CreateMessageModel {
+	if dto == nil {
+		return nil
+	}
+	return &model.CreateMessageModel{
+		ProjectId: id,
+		Type:      dto.Type,
+		Message:   dto.Message,
+	}
 }
