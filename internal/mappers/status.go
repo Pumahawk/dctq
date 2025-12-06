@@ -9,8 +9,7 @@ func ToGetAllStatusResponseDto(status []model.StatusModel) *dto.GetAllStatusResp
 	r := dto.GetAllStatusResponseDto{}
 	for _, g := range status {
 		gdto := dto.GetAllStatusResponseStatusDto{
-			Id:   g.Id,
-			Data: g.Data,
+			Id: g.Id,
 		}
 		r.Status = append(r.Status, gdto)
 	}

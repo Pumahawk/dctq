@@ -7,8 +7,7 @@ type GetAllStatusResponseDto struct {
 }
 
 type GetAllStatusResponseStatusDto struct {
-	Id   string
-	Data StatusDataDto
+	Id string
 }
 
 type GetStatusByIdResponseDto struct {
