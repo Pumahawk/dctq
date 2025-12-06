@@ -1,2 +1,5 @@
 [tools]
 go = "1.25.4"
+
+[tasks.run]
+run = "go run cmd/dctq/main.go "
