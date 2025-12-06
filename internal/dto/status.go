@@ -3,32 +3,32 @@ package dto
 type StatusDataDto = map[string]any
 
 type GetAllStatusResponseDto struct {
-	Status []GetAllStatusResponseStatusDto
+	Status []GetAllStatusResponseStatusDto `json:"status"`
 }
 
 type GetAllStatusResponseStatusDto struct {
-	Id string
+	Id string `json:"id"`
 }
 
 type GetStatusByIdResponseDto struct {
-	Id   string
-	Data StatusDataDto
+	Id   string        `json:"id"`
+	Data StatusDataDto `json:"data"`
 }
 
 type UpdateStatusInfoRequestDto struct {
-	Data StatusDataDto
+	Data StatusDataDto `json:"data"`
 }
 
 type CreateStatusInfoResponseDto struct {
-	Id   string
-	Data StatusDataDto
+	Id   string        `json:"id"`
+	Data StatusDataDto `json:"data"`
 }
 
 type CreateStatusInfoRequestDto struct {
-	Data StatusDataDto
+	Data StatusDataDto `json:"data"`
 }
 
 type UpdateStatusResponseDto struct {
-	Id   string
-	Data StatusDataDto
+	Id   string        `json:"id"`
+	Data StatusDataDto `json:"data"`
 }
