@@ -3,6 +3,7 @@ package model
 import "context"
 
 type StatusDataModel = map[string]any
+type MessageDataModel = map[string]any
 
 type SimplStatusInfoModel struct {
 	Id string
@@ -29,13 +30,13 @@ type MessageSocket struct {
 
 type MessageModel struct {
 	Type    string
-	Message map[string]string
+	Message MessageDataModel
 }
 
 type CreateMessageModel struct {
 	ProjectId string
 	Type      string
-	Message   map[string]string
+	Message   MessageDataModel
 }
 
 type ServerModel struct {
