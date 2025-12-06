@@ -58,10 +58,10 @@ type ServerMessageProcessorImpl struct {
 	globalMessageChannel chan model.CreateMessageModel
 }
 
-func NewServerMessageProcessorImpl(ctx context.Context, statusService StatusService) *ServerMessageProcessorImpl {
+func NewServerMessageProcessorImpl(ctx context.Context, globalMessageChannel chan model.CreateMessageModel, statusService StatusService) *ServerMessageProcessorImpl {
 	return &ServerMessageProcessorImpl{
 		ctx:                  ctx,
-		globalMessageChannel: make(chan model.CreateMessageModel),
+		globalMessageChannel: globalMessageChannel,
 		statusService:        statusService,
 	}
 }
@@ -131,8 +131,10 @@ func (s *StatusServiceImpl) FollowMessages(context context.Context, projectId st
 	return channel, nil
 }
 
-func NewMessageServiceImpl() *MessageServiceImpl {
-	return &MessageServiceImpl{}
+func NewMessageServiceImpl(globalMessageChannel chan model.CreateMessageModel) *MessageServiceImpl {
+	return &MessageServiceImpl{
+		globalMessageChannel: globalMessageChannel,
+	}
 }
 
 func (m *MessageServiceImpl) Send(message *model.CreateMessageModel) error {
