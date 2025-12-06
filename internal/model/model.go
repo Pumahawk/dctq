@@ -1,5 +1,7 @@
 package model
 
+import "context"
+
 type SimplGameInfoModel struct {
 	Id    string
 	Label string
@@ -14,10 +16,11 @@ type GameUpdateModel struct {
 }
 
 type GameModel struct {
-	Id      string
-	Label   string
-	Players []PlayerModel
-	Cards   [3]CardModel
+	Id             string
+	Label          string
+	Players        []PlayerModel
+	Cards          [3]CardModel
+	MessageSockets []MessageSocket
 }
 
 type CardModel struct {
@@ -29,7 +32,7 @@ type PlayerModel struct {
 	Id    string
 	Label string
 	Cards []CardModel
-	Pawn  *PawnModel
+	Pawn  PawnModel
 }
 
 type PawnModel struct {
@@ -37,16 +40,20 @@ type PawnModel struct {
 	Label string
 }
 
+type MessageSocket struct {
+	Context context.Context
+	Channel chan MessageModel
+}
+
 type MessageModel struct {
-	Id      string
-	Time    string
 	Type    string
 	Message map[string]string
 }
 
 type CreateMessageModel struct {
-	Type    string
-	Message map[string]string
+	ProjectId string
+	Type      string
+	Message   map[string]string
 }
 
 type ServerModel struct {

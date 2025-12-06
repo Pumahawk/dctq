@@ -1,8 +1,10 @@
 package services
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/Pumahawk/dctq/internal/model"
@@ -15,6 +17,11 @@ type GameService interface {
 	GameCreator
 	GameGetter
 	GameUpdater
+}
+
+type MessageService interface {
+	MessageSender
+	MessageFollow
 }
 
 type GameListener interface {
@@ -34,7 +41,11 @@ type GameUpdater interface {
 }
 
 type MessageSender interface {
-	Send(string, *model.CreateMessageModel) (*model.MessageModel, error)
+	Send(string, *model.CreateMessageModel) error
+}
+
+type MessageFollow interface {
+	Follow(c context.Context, projectId string) (<-chan model.MessageModel, error)
 }
 
 type GameServiceImpl struct {
@@ -43,6 +54,9 @@ type GameServiceImpl struct {
 }
 
 type MessageServiceImpl struct {
+	gameService          GameService
+	serverContext        context.Context
+	globalMessageChannel chan model.CreateMessageModel
 }
 
 func NewGameServiceImpl() *GameServiceImpl {
@@ -84,6 +98,68 @@ func (s *GameServiceImpl) UpdateById(id string, game model.GameUpdateModel) erro
 	return ErrGameNotFound
 }
 
-func (*MessageServiceImpl) Send(t string, message *model.CreateMessageModel) (*model.MessageModel, error) {
-	return nil, fmt.Errorf("Message sender not implemented")
+func NewMessageServiceImpl(gameService GameService) *MessageServiceImpl {
+	messageServiceImpl := MessageServiceImpl{
+		gameService:          gameService,
+		serverContext:        context.TODO(),
+		globalMessageChannel: make(chan model.CreateMessageModel),
+	}
+	return &messageServiceImpl
+}
+
+func (m *MessageServiceImpl) Send(projectId string, message *model.CreateMessageModel) error {
+	_, err := m.gameService.GetById(projectId)
+	if err != nil && err != ErrGameNotFound {
+		return fmt.Errorf("GameService Send - unable to retrieve game by id %s", projectId)
+	}
+	if err == ErrGameNotFound {
+		return ErrGameNotFound
+	}
+	m.globalMessageChannel <- *message
+	return nil
+}
+
+func (m *MessageServiceImpl) Follow(context context.Context, projectId string) (<-chan model.MessageModel, error) {
+	game, err := m.gameService.GetById(projectId)
+	if err != nil && err != ErrGameNotFound {
+		return nil, fmt.Errorf("GameService Follow - unable to retrieve game by id %s", projectId)
+	}
+	if err == ErrGameNotFound {
+		return nil, ErrGameNotFound
+	}
+	channel := make(chan model.MessageModel)
+	game.MessageSockets = append(game.MessageSockets, model.MessageSocket{
+		Context: context,
+		Channel: channel,
+	})
+	return channel, nil
+}
+
+func (m *MessageServiceImpl) StartServerMessageProcessor() error {
+	log.Printf("Start message processor")
+	for {
+		select {
+		case <-m.serverContext.Done():
+			log.Printf("Close server")
+			// TODO
+		case message := <-m.globalMessageChannel:
+			log.Printf("Incoming message")
+			gameId := message.ProjectId
+			game, err := m.gameService.GetById(gameId)
+			if err != nil {
+				log.Printf("Unable to retrieve project. %s", err)
+				continue
+			}
+			for i := range game.MessageSockets {
+				select {
+				case <-game.MessageSockets[i].Context.Done():
+				case game.MessageSockets[i].Channel <- model.MessageModel{
+					// TODO
+					Type:    message.Type,
+					Message: message.Message,
+				}:
+				}
+			}
+		}
+	}
 }
