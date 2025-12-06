@@ -7,16 +7,19 @@ import (
 
 	"github.com/Pumahawk/dctq/internal/dto"
 	"github.com/Pumahawk/dctq/internal/mappers"
+	"github.com/Pumahawk/dctq/internal/model"
 	"github.com/Pumahawk/dctq/internal/services"
 )
 
 type StatusController struct {
-	statusService services.StatusService
+	statusService  services.StatusService
+	messageService services.MessageService
 }
 
-func NewStatusController(statusService services.StatusService) *StatusController {
+func NewStatusController(statusService services.StatusService, messageService services.MessageService) *StatusController {
 	return &StatusController{
-		statusService,
+		statusService:  statusService,
+		messageService: messageService,
 	}
 }
 
@@ -100,6 +103,11 @@ func (c *StatusController) Update() http.HandlerFunc {
 			log.Printf("UpdateStatusController - error on update. %s", err)
 			return
 		}
+		c.messageService.Send(&model.CreateMessageModel{
+			ProjectId: status.Id,
+			Type:      "status-update",
+			Message:   status.Data,
+		})
 		response := mappers.ToUpdateStatusResponse(status)
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(response)
