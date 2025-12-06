@@ -22,7 +22,7 @@ type ControllerServerImpl struct {
 
 func NewControllerServerImpl(statusService services.StatusService, messageService services.MessageService) *ControllerServerImpl {
 	statusController := NewStatusController(statusService)
-	messagesController := NewMessagesController(messageService)
+	messagesController := NewMessagesController(messageService, statusService)
 
 	serverMux := http.NewServeMux()
 	serverMux.Handle("GET "+StatusEndpoint, statusController.GetAll())

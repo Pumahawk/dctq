@@ -41,7 +41,7 @@ type StatusUpdater interface {
 }
 
 type MessageSender interface {
-	Send(string, *model.CreateMessageModel) error
+	Send(*model.CreateMessageModel) error
 }
 
 type MessageFollow interface {
@@ -107,7 +107,8 @@ func NewMessageServiceImpl(statusService StatusService) *MessageServiceImpl {
 	return &messageServiceImpl
 }
 
-func (m *MessageServiceImpl) Send(projectId string, message *model.CreateMessageModel) error {
+func (m *MessageServiceImpl) Send(message *model.CreateMessageModel) error {
+	projectId := message.ProjectId
 	_, err := m.statusService.GetById(projectId)
 	if err != nil && err != ErrStatusNotFound {
 		return fmt.Errorf("StatusService Send - unable to retrieve status by id %s", projectId)

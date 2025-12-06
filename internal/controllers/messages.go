@@ -11,11 +11,15 @@ import (
 )
 
 type MessagesController struct {
+	statusService  services.StatusService
 	messageService services.MessageService
 }
 
-func NewMessagesController(messageService services.MessageService) *MessagesController {
-	return &MessagesController{messageService: messageService}
+func NewMessagesController(messageService services.MessageService, statusService services.StatusService) *MessagesController {
+	return &MessagesController{
+		messageService: messageService,
+		statusService:  statusService,
+	}
 }
 
 func (c *MessagesController) Send() http.HandlerFunc {
@@ -29,7 +33,7 @@ func (c *MessagesController) Send() http.HandlerFunc {
 			return
 		}
 		m := mappers.ToCreateMessageModelFromDto(id, &dto)
-		err = c.messageService.Send(id, m)
+		err = c.messageService.Send(m)
 		if err != nil {
 			log.Printf("MessagesController Send - Unable to send message. %s", err)
 			w.WriteHeader(500)
@@ -49,6 +53,12 @@ func (c *MessagesController) Follow() http.HandlerFunc {
 			return
 		}
 
+		status, err := c.statusService.GetById(id)
+		if err != nil {
+			log.Printf("MessagesController Follow - %s", err)
+			w.WriteHeader(500)
+		}
+
 		w.Header().Set("Content-Type", "application/json")
 		w.Header().Set("Cache-Control", "no-cache")
 		w.WriteHeader(http.StatusOK)
@@ -58,6 +68,12 @@ func (c *MessagesController) Follow() http.HandlerFunc {
 			http.Error(w, "Streaming not supported", http.StatusInternalServerError)
 			return
 		}
+
+		json.NewEncoder(w).Encode(dto.FollowMessageResponseDto{
+			Type:    "status-info",
+			Message: status.Data,
+		})
+		flusher.Flush()
 
 		for {
 			select {
