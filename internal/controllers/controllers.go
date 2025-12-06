@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	StatusEndpoint    = "/status"
+	StatusEndpoint     = "/status"
 	StatusByIdEndpoint = "/status/{id}"
 	MessagesEndpoint   = "/status/{id}/messages"
 )

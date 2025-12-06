@@ -50,11 +50,11 @@ type MessageFollow interface {
 
 type StatusServiceImpl struct {
 	statusCounterId int64
-	statusInMemory model.ServerModel
+	statusInMemory  model.ServerModel
 }
 
 type MessageServiceImpl struct {
-	statusService          StatusService
+	statusService        StatusService
 	serverContext        context.Context
 	globalMessageChannel chan model.CreateMessageModel
 }
@@ -72,8 +72,8 @@ func (s *StatusServiceImpl) GetAll() ([]model.StatusModel, error) {
 func (s *StatusServiceImpl) Create(status model.SimplStatusCreateInfoModel) (*model.StatusModel, error) {
 	s.statusCounterId = s.statusCounterId + 1
 	statusToCreate := model.StatusModel{
-		Id:    strconv.FormatInt(s.statusCounterId, 10),
-		Label: status.Label,
+		Id:   strconv.FormatInt(s.statusCounterId, 10),
+		Data: status.Data,
 	}
 	s.statusInMemory.Status = append(s.statusInMemory.Status, statusToCreate)
 	return &statusToCreate, nil
@@ -91,7 +91,7 @@ func (s *StatusServiceImpl) GetById(id string) (*model.StatusModel, error) {
 func (s *StatusServiceImpl) UpdateById(id string, status model.StatusUpdateModel) error {
 	for i, g := range s.statusInMemory.Status {
 		if id == g.Id {
-			s.statusInMemory.Status[i].Label = status.Label
+			s.statusInMemory.Status[i].Data = status.Data
 			return nil
 		}
 	}
@@ -100,7 +100,7 @@ func (s *StatusServiceImpl) UpdateById(id string, status model.StatusUpdateModel
 
 func NewMessageServiceImpl(statusService StatusService) *MessageServiceImpl {
 	messageServiceImpl := MessageServiceImpl{
-		statusService:          statusService,
+		statusService:        statusService,
 		serverContext:        context.TODO(),
 		globalMessageChannel: make(chan model.CreateMessageModel),
 	}

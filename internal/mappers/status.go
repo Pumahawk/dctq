@@ -8,9 +8,9 @@ import (
 func ToGetAllStatusResponseDto(status []model.StatusModel) *dto.GetAllStatusResponseDto {
 	r := dto.GetAllStatusResponseDto{}
 	for _, g := range status {
-		gdto := dto.SimplStatusInfoDto{
-			Id:    g.Id,
-			Label: g.Label,
+		gdto := dto.GetAllStatusResponseStatusDto{
+			Id:   g.Id,
+			Data: g.Data,
 		}
 		r.Status = append(r.Status, gdto)
 	}
@@ -22,8 +22,8 @@ func ToCreateStatusInfoResponseDto(status *model.StatusModel) *dto.CreateStatusI
 		return nil
 	}
 	return &dto.CreateStatusInfoResponseDto{
-		Id:    status.Id,
-		Label: status.Label,
+		Id:   status.Id,
+		Data: status.Data,
 	}
 }
 
@@ -32,8 +32,8 @@ func ToGetStatusByIdResponseDto(status *model.StatusModel) *dto.GetStatusByIdRes
 		return nil
 	}
 	return &dto.GetStatusByIdResponseDto{
-		Id:    status.Id,
-		Label: status.Label,
+		Id:   status.Id,
+		Data: status.Data,
 	}
 }
 
@@ -42,7 +42,7 @@ func ToSimplStatusCreateInfoModel(status *dto.CreateStatusInfoRequestDto) *model
 		return nil
 	}
 	return &model.SimplStatusCreateInfoModel{
-		Label: status.Label,
+		Data: status.Data,
 	}
 }
 
@@ -51,8 +51,8 @@ func ToUpdateStatusResponse(status *model.StatusModel) *dto.UpdateStatusResponse
 		return nil
 	}
 	return &dto.UpdateStatusResponseDto{
-		Id:    status.Id,
-		Label: status.Label,
+		Id:   status.Id,
+		Data: status.Data,
 	}
 }
 
@@ -61,16 +61,6 @@ func ToStatusUpdateModel(status *dto.UpdateStatusInfoRequestDto) *model.StatusUp
 		return nil
 	}
 	return &model.StatusUpdateModel{
-		Label: status.Label,
-	}
-}
-func ToCreateMessageModelFromDto(id string, dto *dto.SendMessageRequestDto) *model.CreateMessageModel {
-	if dto == nil {
-		return nil
-	}
-	return &model.CreateMessageModel{
-		ProjectId: id,
-		Type:      dto.Type,
-		Message:   dto.Message,
+		Data: status.Data,
 	}
 }

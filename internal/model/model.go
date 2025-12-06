@@ -2,42 +2,24 @@ package model
 
 import "context"
 
+type StatusDataModel = map[string]any
+
 type SimplStatusInfoModel struct {
-	Id    string
-	Label string
+	Id string
 }
 
 type SimplStatusCreateInfoModel struct {
-	Label string
+	Data StatusDataModel
 }
 
 type StatusUpdateModel struct {
-	Label string
+	Data StatusDataModel
 }
 
 type StatusModel struct {
 	Id             string
-	Label          string
-	Players        []PlayerModel
-	Cards          [3]CardModel
+	Data           StatusDataModel
 	MessageSockets []MessageSocket
-}
-
-type CardModel struct {
-	Id    string
-	Label string
-}
-
-type PlayerModel struct {
-	Id    string
-	Label string
-	Cards []CardModel
-	Pawn  PawnModel
-}
-
-type PawnModel struct {
-	Color string
-	Label string
 }
 
 type MessageSocket struct {
