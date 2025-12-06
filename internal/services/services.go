@@ -10,13 +10,13 @@ import (
 	"github.com/Pumahawk/dctq/internal/model"
 )
 
-var ErrGameNotFound = errors.New("Game not found")
+var ErrStatusNotFound = errors.New("Status not found")
 
-type GameService interface {
-	GameListener
-	GameCreator
-	GameGetter
-	GameUpdater
+type StatusService interface {
+	StatusListener
+	StatusCreator
+	StatusGetter
+	StatusUpdater
 }
 
 type MessageService interface {
@@ -24,20 +24,20 @@ type MessageService interface {
 	MessageFollow
 }
 
-type GameListener interface {
-	GetAll() ([]model.GameModel, error)
+type StatusListener interface {
+	GetAll() ([]model.StatusModel, error)
 }
 
-type GameCreator interface {
-	Create(model.SimplGameCreateInfoModel) (*model.GameModel, error)
+type StatusCreator interface {
+	Create(model.SimplStatusCreateInfoModel) (*model.StatusModel, error)
 }
 
-type GameGetter interface {
-	GetById(string) (*model.GameModel, error)
+type StatusGetter interface {
+	GetById(string) (*model.StatusModel, error)
 }
 
-type GameUpdater interface {
-	UpdateById(id string, game model.GameUpdateModel) error
+type StatusUpdater interface {
+	UpdateById(id string, status model.StatusUpdateModel) error
 }
 
 type MessageSender interface {
@@ -48,59 +48,59 @@ type MessageFollow interface {
 	Follow(c context.Context, projectId string) (<-chan model.MessageModel, error)
 }
 
-type GameServiceImpl struct {
-	gameCounterId int64
-	gamesInMemory model.ServerModel
+type StatusServiceImpl struct {
+	statusCounterId int64
+	statusInMemory model.ServerModel
 }
 
 type MessageServiceImpl struct {
-	gameService          GameService
+	statusService          StatusService
 	serverContext        context.Context
 	globalMessageChannel chan model.CreateMessageModel
 }
 
-func NewGameServiceImpl() *GameServiceImpl {
-	return &GameServiceImpl{
-		gamesInMemory: model.ServerModel{},
+func NewStatusServiceImpl() *StatusServiceImpl {
+	return &StatusServiceImpl{
+		statusInMemory: model.ServerModel{},
 	}
 }
 
-func (s *GameServiceImpl) GetAll() ([]model.GameModel, error) {
-	return s.gamesInMemory.Games, nil
+func (s *StatusServiceImpl) GetAll() ([]model.StatusModel, error) {
+	return s.statusInMemory.Status, nil
 }
 
-func (s *GameServiceImpl) Create(game model.SimplGameCreateInfoModel) (*model.GameModel, error) {
-	s.gameCounterId = s.gameCounterId + 1
-	gameToCreate := model.GameModel{
-		Id:    strconv.FormatInt(s.gameCounterId, 10),
-		Label: game.Label,
+func (s *StatusServiceImpl) Create(status model.SimplStatusCreateInfoModel) (*model.StatusModel, error) {
+	s.statusCounterId = s.statusCounterId + 1
+	statusToCreate := model.StatusModel{
+		Id:    strconv.FormatInt(s.statusCounterId, 10),
+		Label: status.Label,
 	}
-	s.gamesInMemory.Games = append(s.gamesInMemory.Games, gameToCreate)
-	return &gameToCreate, nil
+	s.statusInMemory.Status = append(s.statusInMemory.Status, statusToCreate)
+	return &statusToCreate, nil
 }
 
-func (s *GameServiceImpl) GetById(id string) (*model.GameModel, error) {
-	for i := range s.gamesInMemory.Games {
-		if s.gamesInMemory.Games[i].Id == id {
-			return &s.gamesInMemory.Games[i], nil
+func (s *StatusServiceImpl) GetById(id string) (*model.StatusModel, error) {
+	for i := range s.statusInMemory.Status {
+		if s.statusInMemory.Status[i].Id == id {
+			return &s.statusInMemory.Status[i], nil
 		}
 	}
-	return nil, ErrGameNotFound
+	return nil, ErrStatusNotFound
 }
 
-func (s *GameServiceImpl) UpdateById(id string, game model.GameUpdateModel) error {
-	for i, g := range s.gamesInMemory.Games {
+func (s *StatusServiceImpl) UpdateById(id string, status model.StatusUpdateModel) error {
+	for i, g := range s.statusInMemory.Status {
 		if id == g.Id {
-			s.gamesInMemory.Games[i].Label = game.Label
+			s.statusInMemory.Status[i].Label = status.Label
 			return nil
 		}
 	}
-	return ErrGameNotFound
+	return ErrStatusNotFound
 }
 
-func NewMessageServiceImpl(gameService GameService) *MessageServiceImpl {
+func NewMessageServiceImpl(statusService StatusService) *MessageServiceImpl {
 	messageServiceImpl := MessageServiceImpl{
-		gameService:          gameService,
+		statusService:          statusService,
 		serverContext:        context.TODO(),
 		globalMessageChannel: make(chan model.CreateMessageModel),
 	}
@@ -108,27 +108,27 @@ func NewMessageServiceImpl(gameService GameService) *MessageServiceImpl {
 }
 
 func (m *MessageServiceImpl) Send(projectId string, message *model.CreateMessageModel) error {
-	_, err := m.gameService.GetById(projectId)
-	if err != nil && err != ErrGameNotFound {
-		return fmt.Errorf("GameService Send - unable to retrieve game by id %s", projectId)
+	_, err := m.statusService.GetById(projectId)
+	if err != nil && err != ErrStatusNotFound {
+		return fmt.Errorf("StatusService Send - unable to retrieve status by id %s", projectId)
 	}
-	if err == ErrGameNotFound {
-		return ErrGameNotFound
+	if err == ErrStatusNotFound {
+		return ErrStatusNotFound
 	}
 	m.globalMessageChannel <- *message
 	return nil
 }
 
 func (m *MessageServiceImpl) Follow(context context.Context, projectId string) (<-chan model.MessageModel, error) {
-	game, err := m.gameService.GetById(projectId)
-	if err != nil && err != ErrGameNotFound {
-		return nil, fmt.Errorf("GameService Follow - unable to retrieve game by id %s", projectId)
+	status, err := m.statusService.GetById(projectId)
+	if err != nil && err != ErrStatusNotFound {
+		return nil, fmt.Errorf("StatusService Follow - unable to retrieve status by id %s", projectId)
 	}
-	if err == ErrGameNotFound {
-		return nil, ErrGameNotFound
+	if err == ErrStatusNotFound {
+		return nil, ErrStatusNotFound
 	}
 	channel := make(chan model.MessageModel)
-	game.MessageSockets = append(game.MessageSockets, model.MessageSocket{
+	status.MessageSockets = append(status.MessageSockets, model.MessageSocket{
 		Context: context,
 		Channel: channel,
 	})
@@ -144,16 +144,16 @@ func (m *MessageServiceImpl) StartServerMessageProcessor() error {
 			// TODO
 		case message := <-m.globalMessageChannel:
 			log.Printf("MessageServiceImpl - Incoming message")
-			gameId := message.ProjectId
-			game, err := m.gameService.GetById(gameId)
+			statusId := message.ProjectId
+			status, err := m.statusService.GetById(statusId)
 			if err != nil {
 				log.Printf("MessageServiceImpl - Unable to retrieve project. %s", err)
 				continue
 			}
-			for i := range game.MessageSockets {
+			for i := range status.MessageSockets {
 				select {
-				case <-game.MessageSockets[i].Context.Done():
-				case game.MessageSockets[i].Channel <- model.MessageModel{
+				case <-status.MessageSockets[i].Context.Done():
+				case status.MessageSockets[i].Channel <- model.MessageModel{
 					// TODO
 					Type:    message.Type,
 					Message: message.Message,

@@ -11,11 +11,11 @@ func main() {
 	log.Println("Starting dctq server.")
 
 	log.Println("Main - Create services.")
-	gameService := services.NewGameServiceImpl()
-	messageService := services.NewMessageServiceImpl(gameService)
+	statusService := services.NewStatusServiceImpl()
+	messageService := services.NewMessageServiceImpl(statusService)
 
 	log.Println("Main - Create server controllers.")
-	server := controllers.NewControllerServerImpl(gameService, messageService)
+	server := controllers.NewControllerServerImpl(statusService, messageService)
 
 	log.Printf("Main - Start message processor.")
 	go messageService.StartServerMessageProcessor()

@@ -7,9 +7,9 @@ import (
 )
 
 const (
-	GamesEndpoint    = "/games"
-	GameByIdEndpoint = "/games/{id}"
-	MessagesEndpoint = "/games/{id}/messages"
+	StatusEndpoint    = "/status"
+	StatusByIdEndpoint = "/status/{id}"
+	MessagesEndpoint   = "/status/{id}/messages"
 )
 
 type ControllerServer interface {
@@ -20,15 +20,15 @@ type ControllerServerImpl struct {
 	ServerMux *http.ServeMux
 }
 
-func NewControllerServerImpl(gameService services.GameService, messageService services.MessageService) *ControllerServerImpl {
-	gameController := NewGamesController(gameService)
+func NewControllerServerImpl(statusService services.StatusService, messageService services.MessageService) *ControllerServerImpl {
+	statusController := NewStatusController(statusService)
 	messagesController := NewMessagesController(messageService)
 
 	serverMux := http.NewServeMux()
-	serverMux.Handle("GET "+GamesEndpoint, gameController.GetAll())
-	serverMux.Handle("POST "+GamesEndpoint, gameController.Create())
-	serverMux.Handle("GET "+GameByIdEndpoint, gameController.GetById())
-	serverMux.Handle("PUT "+GameByIdEndpoint, gameController.Update())
+	serverMux.Handle("GET "+StatusEndpoint, statusController.GetAll())
+	serverMux.Handle("POST "+StatusEndpoint, statusController.Create())
+	serverMux.Handle("GET "+StatusByIdEndpoint, statusController.GetById())
+	serverMux.Handle("PUT "+StatusByIdEndpoint, statusController.Update())
 	serverMux.Handle("GET "+MessagesEndpoint, messagesController.Follow())
 	serverMux.Handle("POST "+MessagesEndpoint, messagesController.Send())
 

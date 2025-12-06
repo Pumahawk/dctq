@@ -2,20 +2,20 @@ package model
 
 import "context"
 
-type SimplGameInfoModel struct {
+type SimplStatusInfoModel struct {
 	Id    string
 	Label string
 }
 
-type SimplGameCreateInfoModel struct {
+type SimplStatusCreateInfoModel struct {
 	Label string
 }
 
-type GameUpdateModel struct {
+type StatusUpdateModel struct {
 	Label string
 }
 
-type GameModel struct {
+type StatusModel struct {
 	Id             string
 	Label          string
 	Players        []PlayerModel
@@ -57,5 +57,5 @@ type CreateMessageModel struct {
 }
 
 type ServerModel struct {
-	Games []GameModel
+	Status []StatusModel
 }

@@ -10,87 +10,87 @@ import (
 	"github.com/Pumahawk/dctq/internal/services"
 )
 
-type GamesController struct {
-	gameService services.GameService
+type StatusController struct {
+	statusService services.StatusService
 }
 
-func NewGamesController(gameService services.GameService) *GamesController {
-	return &GamesController{
-		gameService,
+func NewStatusController(statusService services.StatusService) *StatusController {
+	return &StatusController{
+		statusService,
 	}
 }
 
-func (c *GamesController) GetAll() http.HandlerFunc {
+func (c *StatusController) GetAll() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		games, err := c.gameService.GetAll()
+		status, err := c.statusService.GetAll()
 		if err != nil {
-			log.Printf("GamesController - error. %s", err)
+			log.Printf("StatusController - error. %s", err)
 			return
 		}
-		gamesDto := mappers.ToGetAllGameResponseDto(games)
+		statusDto := mappers.ToGetAllStatusResponseDto(status)
 		w.WriteHeader(200)
-		err = json.NewEncoder(w).Encode(gamesDto)
+		err = json.NewEncoder(w).Encode(statusDto)
 		if err != nil {
-			log.Printf("GamesController - error. %s", err)
+			log.Printf("StatusController - error. %s", err)
 			return
 		}
 	}
 }
 
-func (c *GamesController) Create() http.HandlerFunc {
+func (c *StatusController) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var createGameInfoRequestDto dto.CreateGameInfoRequestDto
-		json.NewDecoder(r.Body).Decode(&createGameInfoRequestDto)
-		game, err := c.gameService.Create(*mappers.ToSimplGameCreateInfoModel(&createGameInfoRequestDto))
+		var createStatusInfoRequestDto dto.CreateStatusInfoRequestDto
+		json.NewDecoder(r.Body).Decode(&createStatusInfoRequestDto)
+		status, err := c.statusService.Create(*mappers.ToSimplStatusCreateInfoModel(&createStatusInfoRequestDto))
 		if err != nil {
-			log.Printf("CreateGameController - error. %s", err)
+			log.Printf("CreateStatusController - error. %s", err)
 			return
 		}
-		responseDto := mappers.ToCreateGameInfoResponseDto(game)
-		w.WriteHeader(200)
-		err = json.NewEncoder(w).Encode(responseDto)
-		if err != nil {
-			log.Printf("CreateGameController - error. %s", err)
-			return
-		}
-	}
-}
-
-func (c *GamesController) GetById() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		id := r.PathValue("id")
-		gameModel, err := c.gameService.GetById(id)
-		if err != nil {
-			log.Printf("GetGameByIdController - error. %s", err)
-			return
-		}
-		responseDto := mappers.ToGetGameByIdResponseDto(gameModel)
+		responseDto := mappers.ToCreateStatusInfoResponseDto(status)
 		w.WriteHeader(200)
 		err = json.NewEncoder(w).Encode(responseDto)
 		if err != nil {
-			log.Printf("GetGameByIdController - error. %s", err)
+			log.Printf("CreateStatusController - error. %s", err)
 			return
 		}
 	}
 }
 
-func (c *GamesController) Update() http.HandlerFunc {
+func (c *StatusController) GetById() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		var gdto dto.UpdateGameInfoRequestDto
+		statusModel, err := c.statusService.GetById(id)
+		if err != nil {
+			log.Printf("GetStatusByIdController - error. %s", err)
+			return
+		}
+		responseDto := mappers.ToGetStatusByIdResponseDto(statusModel)
+		w.WriteHeader(200)
+		err = json.NewEncoder(w).Encode(responseDto)
+		if err != nil {
+			log.Printf("GetStatusByIdController - error. %s", err)
+			return
+		}
+	}
+}
+
+func (c *StatusController) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id := r.PathValue("id")
+		var gdto dto.UpdateStatusInfoRequestDto
 		json.NewDecoder(r.Body).Decode(&gdto)
-		gum := *mappers.ToGameUpdateModel(&gdto)
-		err := c.gameService.UpdateById(id, gum)
+		gum := *mappers.ToStatusUpdateModel(&gdto)
+		err := c.statusService.UpdateById(id, gum)
 		if err != nil {
-			log.Printf("UpdateGameController - error on update. %s", err)
+			log.Printf("UpdateStatusController - error on update. %s", err)
 			return
 		}
-		game, err := c.gameService.GetById(id)
+		status, err := c.statusService.GetById(id)
 		if err != nil {
-			log.Printf("UpdateGameController - error on update. %s", err)
+			log.Printf("UpdateStatusController - error on update. %s", err)
 			return
 		}
-		response := mappers.ToUpdateGameResponse(game)
+		response := mappers.ToUpdateStatusResponse(status)
 		w.WriteHeader(200)
 		json.NewEncoder(w).Encode(response)
 	}

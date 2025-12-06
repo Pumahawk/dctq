@@ -5,63 +5,63 @@ import (
 	"github.com/Pumahawk/dctq/internal/model"
 )
 
-func ToGetAllGameResponseDto(games []model.GameModel) *dto.GetAllGameResponseDto {
-	r := dto.GetAllGameResponseDto{}
-	for _, g := range games {
-		gdto := dto.SimplGameInfoDto{
+func ToGetAllStatusResponseDto(status []model.StatusModel) *dto.GetAllStatusResponseDto {
+	r := dto.GetAllStatusResponseDto{}
+	for _, g := range status {
+		gdto := dto.SimplStatusInfoDto{
 			Id:    g.Id,
 			Label: g.Label,
 		}
-		r.Games = append(r.Games, gdto)
+		r.Status = append(r.Status, gdto)
 	}
 	return &r
 }
 
-func ToCreateGameInfoResponseDto(game *model.GameModel) *dto.CreateGameInfoResponseDto {
-	if game == nil {
+func ToCreateStatusInfoResponseDto(status *model.StatusModel) *dto.CreateStatusInfoResponseDto {
+	if status == nil {
 		return nil
 	}
-	return &dto.CreateGameInfoResponseDto{
-		Id:    game.Id,
-		Label: game.Label,
+	return &dto.CreateStatusInfoResponseDto{
+		Id:    status.Id,
+		Label: status.Label,
 	}
 }
 
-func ToGetGameByIdResponseDto(game *model.GameModel) *dto.GetGameByIdResponseDto {
-	if game == nil {
+func ToGetStatusByIdResponseDto(status *model.StatusModel) *dto.GetStatusByIdResponseDto {
+	if status == nil {
 		return nil
 	}
-	return &dto.GetGameByIdResponseDto{
-		Id:    game.Id,
-		Label: game.Label,
+	return &dto.GetStatusByIdResponseDto{
+		Id:    status.Id,
+		Label: status.Label,
 	}
 }
 
-func ToSimplGameCreateInfoModel(game *dto.CreateGameInfoRequestDto) *model.SimplGameCreateInfoModel {
-	if game == nil {
+func ToSimplStatusCreateInfoModel(status *dto.CreateStatusInfoRequestDto) *model.SimplStatusCreateInfoModel {
+	if status == nil {
 		return nil
 	}
-	return &model.SimplGameCreateInfoModel{
-		Label: game.Label,
+	return &model.SimplStatusCreateInfoModel{
+		Label: status.Label,
 	}
 }
 
-func ToUpdateGameResponse(game *model.GameModel) *dto.UpdateGameResponseDto {
-	if game == nil {
+func ToUpdateStatusResponse(status *model.StatusModel) *dto.UpdateStatusResponseDto {
+	if status == nil {
 		return nil
 	}
-	return &dto.UpdateGameResponseDto{
-		Id:    game.Id,
-		Label: game.Label,
+	return &dto.UpdateStatusResponseDto{
+		Id:    status.Id,
+		Label: status.Label,
 	}
 }
 
-func ToGameUpdateModel(game *dto.UpdateGameInfoRequestDto) *model.GameUpdateModel {
-	if game == nil {
+func ToStatusUpdateModel(status *dto.UpdateStatusInfoRequestDto) *model.StatusUpdateModel {
+	if status == nil {
 		return nil
 	}
-	return &model.GameUpdateModel{
-		Label: game.Label,
+	return &model.StatusUpdateModel{
+		Label: status.Label,
 	}
 }
 func ToCreateMessageModelFromDto(id string, dto *dto.SendMessageRequestDto) *model.CreateMessageModel {

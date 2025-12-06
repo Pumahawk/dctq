@@ -1,33 +1,33 @@
 package dto
 
-type GetAllGameResponseDto struct {
-	Games []SimplGameInfoDto
+type GetAllStatusResponseDto struct {
+	Status []SimplStatusInfoDto
 }
 
-type SimplGameInfoDto struct {
+type SimplStatusInfoDto struct {
 	Id    string
 	Label string
 }
 
-type GetGameByIdResponseDto struct {
+type GetStatusByIdResponseDto struct {
 	Id    string
 	Label string
 }
 
-type UpdateGameInfoRequestDto struct {
+type UpdateStatusInfoRequestDto struct {
 	Label string
 }
 
-type CreateGameInfoResponseDto struct {
+type CreateStatusInfoResponseDto struct {
 	Id    string
 	Label string
 }
 
-type CreateGameInfoRequestDto struct {
+type CreateStatusInfoRequestDto struct {
 	Label string
 }
 
-type UpdateGameResponseDto struct {
+type UpdateStatusResponseDto struct {
 	Id    string
 	Label string
 }
