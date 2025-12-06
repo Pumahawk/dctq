@@ -2,7 +2,6 @@ package main
 
 import (
 	"log"
-	"net/http"
 
 	"github.com/Pumahawk/dctq/internal/controllers"
 	"github.com/Pumahawk/dctq/internal/services"
@@ -10,17 +9,17 @@ import (
 
 func main() {
 	log.Println("Starting dctq server.")
+
+	log.Println("Main - Create services.")
 	gameService := services.NewGameServiceImpl()
 	messageService := services.NewMessageServiceImpl(gameService)
-	gameController := controllers.NewGamesController(gameService)
-	messagesController := *controllers.NewMessagesController(messageService)
-	http.Handle("GET "+controllers.GamesEndpoint, gameController.GetAll())
-	http.Handle("POST "+controllers.GamesEndpoint, gameController.Create())
-	http.Handle("GET "+controllers.GameByIdEndpoint, gameController.GetById())
-	http.Handle("PUT "+controllers.GameByIdEndpoint, gameController.Update())
-	http.Handle("GET "+controllers.MessagesEndpoint, messagesController.Follow())
-	http.Handle("POST "+controllers.MessagesEndpoint, messagesController.Send())
+
+	log.Println("Main - Create server controllers.")
+	server := controllers.NewControllerServerImpl(gameService, messageService)
+
+	log.Printf("Main - Start message processor.")
 	go messageService.StartServerMessageProcessor()
-	log.Println("Start Cluedo server")
-	log.Fatal(http.ListenAndServe(":8080", nil))
+
+	log.Println("Main - Start server controllers.")
+	log.Fatal(server.ListenAndServe())
 }

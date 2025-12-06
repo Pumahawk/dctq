@@ -136,18 +136,18 @@ func (m *MessageServiceImpl) Follow(context context.Context, projectId string) (
 }
 
 func (m *MessageServiceImpl) StartServerMessageProcessor() error {
-	log.Printf("Start message processor")
+	log.Printf("MessageServiceImpl - Start message processor")
 	for {
 		select {
 		case <-m.serverContext.Done():
-			log.Printf("Close server")
+			log.Printf("MessageServiceImpl - Close server")
 			// TODO
 		case message := <-m.globalMessageChannel:
-			log.Printf("Incoming message")
+			log.Printf("MessageServiceImpl - Incoming message")
 			gameId := message.ProjectId
 			game, err := m.gameService.GetById(gameId)
 			if err != nil {
-				log.Printf("Unable to retrieve project. %s", err)
+				log.Printf("MessageServiceImpl - Unable to retrieve project. %s", err)
 				continue
 			}
 			for i := range game.MessageSockets {
