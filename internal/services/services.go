@@ -17,11 +17,11 @@ type StatusService interface {
 	StatusCreator
 	StatusGetter
 	StatusUpdater
+	StatusMessageFollow
 }
 
 type MessageService interface {
 	MessageSender
-	MessageFollow
 }
 
 type StatusListener interface {
@@ -44,8 +44,26 @@ type MessageSender interface {
 	Send(*model.CreateMessageModel) error
 }
 
-type MessageFollow interface {
-	Follow(c context.Context, projectId string) (<-chan model.MessageModel, error)
+type StatusMessageFollow interface {
+	FollowMessages(c context.Context, projectId string) (<-chan model.MessageModel, error)
+}
+
+type ServerMessageProcessor interface {
+	Start() error
+}
+
+type ServerMessageProcessorImpl struct {
+	statusService        StatusService
+	ctx                  context.Context
+	globalMessageChannel chan model.CreateMessageModel
+}
+
+func NewServerMessageProcessorImpl(ctx context.Context, statusService StatusService) *ServerMessageProcessorImpl {
+	return &ServerMessageProcessorImpl{
+		ctx:                  ctx,
+		globalMessageChannel: make(chan model.CreateMessageModel),
+		statusService:        statusService,
+	}
 }
 
 type StatusServiceImpl struct {
@@ -54,7 +72,6 @@ type StatusServiceImpl struct {
 }
 
 type MessageServiceImpl struct {
-	statusService        StatusService
 	serverContext        context.Context
 	globalMessageChannel chan model.CreateMessageModel
 }
@@ -98,30 +115,8 @@ func (s *StatusServiceImpl) UpdateById(id string, status model.StatusUpdateModel
 	return ErrStatusNotFound
 }
 
-func NewMessageServiceImpl(statusService StatusService) *MessageServiceImpl {
-	messageServiceImpl := MessageServiceImpl{
-		statusService:        statusService,
-		serverContext:        context.TODO(),
-		globalMessageChannel: make(chan model.CreateMessageModel),
-	}
-	return &messageServiceImpl
-}
-
-func (m *MessageServiceImpl) Send(message *model.CreateMessageModel) error {
-	projectId := message.ProjectId
-	_, err := m.statusService.GetById(projectId)
-	if err != nil && err != ErrStatusNotFound {
-		return fmt.Errorf("StatusService Send - unable to retrieve status by id %s", projectId)
-	}
-	if err == ErrStatusNotFound {
-		return ErrStatusNotFound
-	}
-	m.globalMessageChannel <- *message
-	return nil
-}
-
-func (m *MessageServiceImpl) Follow(context context.Context, projectId string) (<-chan model.MessageModel, error) {
-	status, err := m.statusService.GetById(projectId)
+func (s *StatusServiceImpl) FollowMessages(context context.Context, projectId string) (<-chan model.MessageModel, error) {
+	status, err := s.GetById(projectId)
 	if err != nil && err != ErrStatusNotFound {
 		return nil, fmt.Errorf("StatusService Follow - unable to retrieve status by id %s", projectId)
 	}
@@ -136,17 +131,26 @@ func (m *MessageServiceImpl) Follow(context context.Context, projectId string) (
 	return channel, nil
 }
 
-func (m *MessageServiceImpl) StartServerMessageProcessor() error {
+func NewMessageServiceImpl() *MessageServiceImpl {
+	return &MessageServiceImpl{}
+}
+
+func (m *MessageServiceImpl) Send(message *model.CreateMessageModel) error {
+	m.globalMessageChannel <- *message
+	return nil
+}
+
+func (s *ServerMessageProcessorImpl) Start() error {
 	log.Printf("MessageServiceImpl - Start message processor")
 	for {
 		select {
-		case <-m.serverContext.Done():
+		case <-s.ctx.Done():
 			log.Printf("MessageServiceImpl - Close server")
 			// TODO
-		case message := <-m.globalMessageChannel:
+		case message := <-s.globalMessageChannel:
 			log.Printf("MessageServiceImpl - Incoming message")
 			statusId := message.ProjectId
-			status, err := m.statusService.GetById(statusId)
+			status, err := s.statusService.GetById(statusId)
 			if err != nil {
 				log.Printf("MessageServiceImpl - Unable to retrieve project. %s", err)
 				continue

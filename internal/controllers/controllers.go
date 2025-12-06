@@ -29,7 +29,7 @@ func NewControllerServerImpl(statusService services.StatusService, messageServic
 	serverMux.Handle("POST "+StatusEndpoint, statusController.Create())
 	serverMux.Handle("GET "+StatusByIdEndpoint, statusController.GetById())
 	serverMux.Handle("PUT "+StatusByIdEndpoint, statusController.Update())
-	serverMux.Handle("GET "+MessagesEndpoint, messagesController.Follow())
+	serverMux.Handle("GET "+MessagesEndpoint, statusController.Follow())
 	serverMux.Handle("POST "+MessagesEndpoint, messagesController.Send())
 
 	return &ControllerServerImpl{

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"github.com/Pumahawk/dctq/internal/controllers"
@@ -12,13 +13,14 @@ func main() {
 
 	log.Println("Main - Create services.")
 	statusService := services.NewStatusServiceImpl()
-	messageService := services.NewMessageServiceImpl(statusService)
+	messageService := services.NewMessageServiceImpl()
+	serverMessageProcessorImpl := services.NewServerMessageProcessorImpl(context.TODO(), statusService)
 
 	log.Println("Main - Create server controllers.")
 	server := controllers.NewControllerServerImpl(statusService, messageService)
 
 	log.Printf("Main - Start message processor.")
-	go messageService.StartServerMessageProcessor()
+	go serverMessageProcessorImpl.Start()
 
 	log.Println("Main - Start server controllers.")
 	log.Fatal(server.ListenAndServe())

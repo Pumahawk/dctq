@@ -43,10 +43,10 @@ func (c *MessagesController) Send() http.HandlerFunc {
 	}
 }
 
-func (c *MessagesController) Follow() http.HandlerFunc {
+func (c *StatusController) Follow() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
-		channel, err := c.messageService.Follow(r.Context(), id)
+		channel, err := c.statusService.FollowMessages(r.Context(), id)
 		if err != nil {
 			log.Printf("MessagesController Follow - %s", err)
 			w.WriteHeader(500)
