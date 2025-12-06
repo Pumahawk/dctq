@@ -40,7 +40,12 @@ func (c *StatusController) GetAll() http.HandlerFunc {
 func (c *StatusController) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var createStatusInfoRequestDto dto.CreateStatusInfoRequestDto
-		json.NewDecoder(r.Body).Decode(&createStatusInfoRequestDto)
+		err := json.NewDecoder(r.Body).Decode(&createStatusInfoRequestDto)
+		if err != nil {
+			log.Printf("CreateStatusController - Unable to read body request. %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		status, err := c.statusService.Create(*mappers.ToSimplStatusCreateInfoModel(&createStatusInfoRequestDto))
 		if err != nil {
 			log.Printf("CreateStatusController - error. %s", err)
@@ -78,9 +83,14 @@ func (c *StatusController) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id := r.PathValue("id")
 		var gdto dto.UpdateStatusInfoRequestDto
-		json.NewDecoder(r.Body).Decode(&gdto)
+		err := json.NewDecoder(r.Body).Decode(&gdto)
+		if err != nil {
+			log.Printf("CreateStatusController - Unable to read body request. %s", err)
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
 		gum := *mappers.ToStatusUpdateModel(&gdto)
-		err := c.statusService.UpdateById(id, gum)
+		err = c.statusService.UpdateById(id, gum)
 		if err != nil {
 			log.Printf("UpdateStatusController - error on update. %s", err)
 			return
