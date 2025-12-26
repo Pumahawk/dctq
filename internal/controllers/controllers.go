@@ -28,7 +28,7 @@ func NewControllerServerImpl(statusService services.StatusService, messageServic
 	serverMux.Handle("GET "+StatusEndpoint, cors(statusController.GetAll()))
 	serverMux.Handle("POST "+StatusEndpoint, cors(statusController.Create()))
 	serverMux.Handle("GET "+StatusByIdEndpoint, cors(statusController.GetById()))
-	serverMux.Handle("PUT "+StatusByIdEndpoint, cors(statusController.Update()))
+	serverMux.Handle("POST "+StatusByIdEndpoint, cors(statusController.Update()))
 	serverMux.Handle("GET "+MessagesEndpoint, cors(statusController.Follow()))
 	serverMux.Handle("POST "+MessagesEndpoint, cors(messagesController.Send()))
 
