@@ -2,10 +2,11 @@ package services
 
 import (
 	"context"
+	"crypto/rand"
 	"errors"
 	"fmt"
+	"io"
 	"log"
-	"strconv"
 
 	"github.com/Pumahawk/dctq/internal/model"
 )
@@ -67,8 +68,7 @@ func NewServerMessageProcessorImpl(ctx context.Context, globalMessageChannel cha
 }
 
 type StatusServiceImpl struct {
-	statusCounterId int64
-	statusInMemory  model.ServerModel
+	statusInMemory model.ServerModel
 }
 
 type MessageServiceImpl struct {
@@ -87,9 +87,9 @@ func (s *StatusServiceImpl) GetAll() ([]model.StatusModel, error) {
 }
 
 func (s *StatusServiceImpl) Create(status model.SimplStatusCreateInfoModel) (*model.StatusModel, error) {
-	s.statusCounterId = s.statusCounterId + 1
+	id, _ := GenerateUUIDv4()
 	statusToCreate := model.StatusModel{
-		Id:   strconv.FormatInt(s.statusCounterId, 10),
+		Id:   id,
 		Data: status.Data,
 	}
 	s.statusInMemory.Status = append(s.statusInMemory.Status, statusToCreate)
@@ -169,4 +169,21 @@ func (s *ServerMessageProcessorImpl) Start() error {
 			}
 		}
 	}
+}
+
+func GenerateUUIDv4() (string, error) {
+	uuid := make([]byte, 16)
+	_, err := io.ReadFull(rand.Reader, uuid)
+	if err != nil {
+		return "", err
+	}
+	uuid[6] = (uuid[6] & 0x0F) | 0x40
+	uuid[8] = (uuid[8] & 0x3F) | 0x80
+	return fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
+		uuid[0:4],
+		uuid[4:6],
+		uuid[6:8],
+		uuid[8:10],
+		uuid[10:16],
+	), nil
 }
